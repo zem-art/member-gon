@@ -247,7 +247,7 @@
             </div>
         </div>
 
-        <!-- Mobile Bottom Nav -->
+        <!-- Mobile Bottom Nav Chart UP-->
         <nav
             class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t flex justify-around items-center py-3 px-4 z-40 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <button onclick="navigate('home')" id="nav-home"
@@ -259,6 +259,7 @@
                 </svg>
                 <span class="text-[10px] font-bold">Beranda</span>
             </button>
+
             <button onclick="navigate('tracking')" id="nav-tracking"
                 class="flex flex-col items-center gap-1 text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
@@ -268,19 +269,21 @@
                 </svg>
                 <span class="text-[10px] font-bold">Lacak</span>
             </button>
+
             <button onclick="toggleCart()" class="flex flex-col items-center gap-1 text-gray-400 relative">
-                <div class="bg-blue-600 text-white p-3 -mt-10 rounded-full border-4 border-white shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="8" cy="21" r="1" />
-                        <circle cx="19" cy="21" r="1" />
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-                    </svg>
-                </div>
+                <!-- <div class="bg-blue-600 text-white p-3 -mt-10 rounded-full border-4 border-white shadow-lg"> -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="8" cy="21" r="1" />
+                    <circle cx="19" cy="21" r="1" />
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                </svg>
+                <!-- </div> -->
                 <span id="cart-count-mobile"
-                    class="absolute -top-11 right-0 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">0</span>
+                    class="absolute -top-3 right-0 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">0</span>
                 <span class="text-[10px] font-bold">Keranjang</span>
             </button>
+
             <button onclick="navigate('history')" id="nav-history"
                 class="flex flex-col items-center gap-1 text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"

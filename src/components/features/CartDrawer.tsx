@@ -38,24 +38,27 @@ export default function CartDrawer() {
                         </div>
                     ) : (
                         cart.map((item) => (
-                            <div key={item.id} className="flex gap-4 bg-white dark:bg-gray-800 p-3 rounded-2xl border dark:border-gray-700">
-                                <img src={item.img} className="w-16 h-16 rounded-xl object-cover" alt={item.name} />
-                                <div className="flex-1">
-                                    <h4 className="font-bold text-sm leading-tight">{item.name}</h4>
+                            <div key={item.variant_sku} className="flex gap-4 bg-white dark:bg-gray-800 p-3 rounded-2xl border dark:border-gray-700">
+                                <img src={item.thumbnail} className="w-16 h-16 rounded-xl object-cover" alt={item.name_product} />
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="font-bold text-sm leading-tight truncate">{item.name_product}</h4>
+                                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">
+                                        {item.color} · {item.size}
+                                    </p>
                                     <p className="text-blue-600 dark:text-blue-400 text-sm font-bold mt-1">
                                         Rp {item.price.toLocaleString('id-ID')}
                                     </p>
                                     <div className="flex items-center gap-3 mt-2">
                                         <button
-                                            onClick={() => updateQty(item.id, -1)}
-                                            className="w-6 h-6 border dark:border-gray-600 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                                            onClick={() => updateQty(item.variant_sku, -1)}
+                                            className="w-6 h-6 border dark:border-gray-600 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition text-xs"
                                         >
-                                            -
+                                            −
                                         </button>
                                         <span className="text-xs font-bold">{item.qty}</span>
                                         <button
-                                            onClick={() => updateQty(item.id, 1)}
-                                            className="w-6 h-6 border dark:border-gray-600 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                                            onClick={() => updateQty(item.variant_sku, 1)}
+                                            className="w-6 h-6 border dark:border-gray-600 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition text-xs"
                                         >
                                             +
                                         </button>

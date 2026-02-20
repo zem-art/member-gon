@@ -45,8 +45,8 @@ export default function HistoryPage() {
                                 </div>
                                 <span
                                     className={`px-3 py-1 text-[10px] font-bold rounded-full ${order.status === 'Completed'
-                                            ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'
-                                            : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400'
+                                        ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400'
+                                        : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400'
                                         }`}
                                 >
                                     {order.status}
@@ -54,8 +54,8 @@ export default function HistoryPage() {
                             </div>
                             <div className="space-y-1 mb-4">
                                 {order.items.slice(0, 2).map((item) => (
-                                    <p key={item.id} className="text-xs text-gray-600 dark:text-gray-400">
-                                        • {item.name} ({item.qty}x)
+                                    <p key={item.variant_sku} className="text-xs text-gray-600 dark:text-gray-400">
+                                        • {item.name_product} ({item.color}/{item.size}) x{item.qty}
                                     </p>
                                 ))}
                             </div>

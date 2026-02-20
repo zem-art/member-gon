@@ -1,13 +1,15 @@
 import type {
   Product,
+  ProductDetail,
   Order,
   CustomerInfo,
   CartItem,
   PaymentMethod,
   PaymentDetail,
   TrackingInfo,
+  PaginatedResponse,
 } from "../types";
-import { PRODUCTS } from "../data/products";
+import { PRODUCTS, generateMockDetail } from "../data/products";
 
 // ─── Configuration ──────────────────────────────────────────────
 // Set VITE_API_BASE_URL in .env to enable real API calls.
@@ -41,12 +43,56 @@ export async function fetchProducts(): Promise<Product[]> {
   return Promise.resolve(PRODUCTS);
 }
 
-/** GET /products/:id — Fetch single product */
-export async function fetchProductById(id: number): Promise<Product | null> {
+/** GET /products?page=X&limit=Y&name=Z — Fetch products with pagination + search */
+export async function fetchProductsPaginated(
+  page: number = 1,
+  limit: number = 8,
+  search: string = "",
+): Promise<PaginatedResponse<Product>> {
   if (API_BASE_URL) {
-    return apiFetch<Product>(`/products/${id}`);
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+    if (search) params.set("name", search);
+    return apiFetch<PaginatedResponse<Product>>(
+      `/products?${params.toString()}`,
+    );
   }
-  return Promise.resolve(PRODUCTS.find((p) => p.id === id) || null);
+
+  // Fallback: simulate paginated + search response from static data
+  await new Promise((r) => setTimeout(r, 500));
+
+  const filtered = search
+    ? PRODUCTS.filter((p) =>
+      p.name_product.toLowerCase().includes(search.toLowerCase()),
+    )
+    : PRODUCTS;
+
+  const start = (page - 1) * limit;
+  const end = start + limit;
+  const data = filtered.slice(start, end);
+  const total = filtered.length;
+
+  return {
+    data,
+    page,
+    limit,
+    total,
+    hasMore: end < total,
+  };
+}
+
+/** GET /products/:id — Fetch single product with variants */
+export async function fetchProductById(id: string): Promise<ProductDetail | null> {
+  if (API_BASE_URL) {
+    return apiFetch<ProductDetail>(`/products/${id}`);
+  }
+  // Fallback: generate detail from static data
+  await new Promise((r) => setTimeout(r, 300));
+  const product = PRODUCTS.find((p) => p._id === id);
+  if (!product) return null;
+  return generateMockDetail(product);
 }
 
 // ─── Orders ─────────────────────────────────────────────────────

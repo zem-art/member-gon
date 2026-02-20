@@ -1,14 +1,14 @@
 import { create } from "zustand";
-import type { CartItem, Product } from "../types";
+import type { CartItem } from "../types";
 
 const CART_STORAGE_KEY = "belikilat_cart";
 
 interface CartState {
   cart: CartItem[];
   isCartOpen: boolean;
-  addToCart: (product: Product) => void;
-  updateQty: (id: number, delta: number) => void;
-  removeItem: (id: number) => void;
+  addToCart: (item: CartItem) => void;
+  updateQty: (variantSku: string, delta: number) => void;
+  removeItem: (variantSku: string) => void;
   clearCart: () => void;
   toggleCart: () => void;
   getTotal: () => number;
@@ -29,34 +29,47 @@ export const useCartStore = create<CartState>((set, get) => ({
     const saved = localStorage.getItem(CART_STORAGE_KEY);
     if (saved) {
       try {
-        set({ cart: JSON.parse(saved) });
+        const parsed = JSON.parse(saved) as CartItem[];
+        // Validate cart items have new variant schema
+        const isValid = parsed.every(
+          (item) => item.variant_sku && item.name_product && item.thumbnail && item.price,
+        );
+        if (isValid) {
+          set({ cart: parsed });
+        } else {
+          localStorage.removeItem(CART_STORAGE_KEY);
+        }
       } catch {
         localStorage.removeItem(CART_STORAGE_KEY);
       }
     }
   },
 
-  addToCart: (product: Product) => {
+  addToCart: (item: CartItem) => {
     set((state) => {
-      const existing = state.cart.find((item) => item.id === product.id);
+      const existing = state.cart.find((c) => c.variant_sku === item.variant_sku);
       let newCart: CartItem[];
       if (existing) {
-        newCart = state.cart.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item,
+        newCart = state.cart.map((c) =>
+          c.variant_sku === item.variant_sku
+            ? { ...c, qty: c.qty + item.qty }
+            : c,
         );
       } else {
-        newCart = [...state.cart, { ...product, qty: 1 }];
+        newCart = [...state.cart, item];
       }
       saveCart(newCart);
       return { cart: newCart };
     });
   },
 
-  updateQty: (id: number, delta: number) => {
+  updateQty: (variantSku: string, delta: number) => {
     set((state) => {
       const newCart = state.cart
         .map((item) =>
-          item.id === id ? { ...item, qty: item.qty + delta } : item,
+          item.variant_sku === variantSku
+            ? { ...item, qty: item.qty + delta }
+            : item,
         )
         .filter((item) => item.qty > 0);
       saveCart(newCart);
@@ -64,9 +77,9 @@ export const useCartStore = create<CartState>((set, get) => ({
     });
   },
 
-  removeItem: (id: number) => {
+  removeItem: (variantSku: string) => {
     set((state) => {
-      const newCart = state.cart.filter((item) => item.id !== id);
+      const newCart = state.cart.filter((item) => item.variant_sku !== variantSku);
       saveCart(newCart);
       return { cart: newCart };
     });

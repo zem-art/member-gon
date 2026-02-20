@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HomePage from './components/pages/HomePage';
+import ProductDetailPage from './components/pages/ProductDetailPage';
 import TrackingPage from './components/pages/TrackingPage';
 import HistoryPage from './components/pages/HistoryPage';
 import PaymentPage from './components/pages/PaymentPage';
@@ -28,6 +29,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/payment" element={<PaymentPage />} />

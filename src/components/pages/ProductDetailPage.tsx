@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchProductById } from '../../services/api';
 import { useCartStore } from '../../stores/useCartStore';
 import { useUIStore } from '../../stores/useUIStore';
+import { usePageMeta } from '../../hooks/usePageMeta';
 import type { ProductDetail, ProductVariant, CartItem } from '../../types';
 
 // ─── Color mapping for visual chips ─────────────────────────────
@@ -102,8 +103,38 @@ export default function ProductDetailPage() {
         );
     };
 
+    const handleShare = async () => {
+        if (!product) return;
+        const url = window.location.href;
+        const text = `${product.name_product} — Rp ${product.price_min.toLocaleString('id-ID')}${product.price_min !== product.price_max ? ` - ${product.price_max.toLocaleString('id-ID')}` : ''}`;
+
+        // Try native Web Share API (mobile + some desktops)
+        if (navigator.share) {
+            try {
+                await navigator.share({ title: product.name_product, text, url });
+                return;
+            } catch {
+                // User cancelled or API failed — fall through to clipboard
+            }
+        }
+
+        // Fallback: copy link to clipboard
+        try {
+            await navigator.clipboard.writeText(url);
+            showToast('Link produk berhasil disalin! 📋');
+        } catch {
+            showToast('Gagal menyalin link');
+        }
+    };
+
     const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
     const maxQty = selectedVariant ? selectedVariant.stock : 1;
+
+    // Dynamic SEO
+    usePageMeta({
+        title: product?.name_product,
+        description: product?.description,
+    });
 
     // ─── Loading state ──────────────────────────────────────────
     if (loading) {
@@ -186,14 +217,27 @@ export default function ProductDetailPage() {
 
                 {/* ─── Product Info ───────────────────────────────── */}
                 <div className="space-y-6">
-                    {/* Brand & Name */}
+                    {/* Brand & Name + Share */}
                     <div>
-                        <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                            {product.brand}
-                        </span>
-                        <h1 className="text-2xl md:text-3xl font-bold mt-1 leading-tight">
-                            {product.name_product}
-                        </h1>
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <span className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                                    {product.brand}
+                                </span>
+                                <h1 className="text-2xl md:text-3xl font-bold mt-1 leading-tight">
+                                    {product.name_product}
+                                </h1>
+                            </div>
+                            <button
+                                onClick={handleShare}
+                                title="Bagikan produk"
+                                className="p-2.5 rounded-xl border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 shrink-0 ml-4"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     {/* Price */}

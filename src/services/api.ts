@@ -10,6 +10,7 @@ import type {
   PaginatedResponse,
 } from "../types";
 import { PRODUCTS, generateMockDetail } from "../data/products";
+import { getGuestId } from "../utils/guestId";
 
 // ─── Configuration ──────────────────────────────────────────────
 // Set VITE_API_BASE_URL in .env to enable real API calls.
@@ -23,7 +24,11 @@ async function apiFetch<T>(
   options?: RequestInit,
 ): Promise<T> {
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: { "Content-Type": "application/json", ...options?.headers },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Guest-Id": getGuestId(),
+      ...options?.headers,
+    },
     ...options,
   });
   if (!res.ok) {

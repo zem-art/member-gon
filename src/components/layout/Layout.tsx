@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import DesktopNav from './DesktopNav';
+import Footer from './Footer';
 import MobileNav from './MobileNav';
 import Toast from './Toast';
 import CartDrawer from '../features/CartDrawer';
@@ -12,6 +13,7 @@ export default function Layout() {
             <main className="max-w-7xl mx-auto px-4 py-6 md:py-10">
                 <Outlet />
             </main>
+            <Footer />
             <MobileNav />
             <CartDrawer />
             <CheckoutModal />

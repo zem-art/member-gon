@@ -4,6 +4,7 @@ import { fetchProductById } from '../../services/api';
 import { useCartStore } from '../../stores/useCartStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { usePageMeta } from '../../hooks/usePageMeta';
+import { IconRenderer } from '../icons/IconRenderer';
 import type { ProductDetail, ProductVariant, CartItem } from '../../types';
 
 // ─── Color mapping for visual chips ─────────────────────────────
@@ -204,11 +205,9 @@ export default function ProductDetailPage() {
     // ─── Error / not found ──────────────────────────────────────
     if (error || !product) {
         return (
-            <div className="max-w-lg mx-auto text-center py-20">
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-50 dark:bg-red-950/30 flex items-center justify-center">
-                    <svg className="w-10 h-10 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4">
+                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-500 mb-4">
+                    <IconRenderer name="LuCircleAlert" className="w-8 h-8" />
                 </div>
                 <h2 className="text-xl font-bold mb-2">{error || 'Product not found'}</h2>
                 <button
@@ -226,11 +225,9 @@ export default function ProductDetailPage() {
             {/* Back button */}
             <button
                 onClick={() => navigate('/')}
-                className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mb-6 transition font-medium"
+                className="mb-6 flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition font-medium text-sm md:text-base"
             >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
+                <IconRenderer name="LuChevronLeft" className="w-4 h-4" />
                 Back
             </button>
 
@@ -280,9 +277,7 @@ export default function ProductDetailPage() {
                                 title="Share product"
                                 className="p-2.5 rounded-xl border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 shrink-0 ml-4"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                                </svg>
+                                <IconRenderer name="LuShare2" className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
@@ -323,14 +318,7 @@ export default function ProductDetailPage() {
                                         style={{ backgroundColor: hex }}
                                     >
                                         {isActive && (
-                                            <svg
-                                                className="absolute inset-0 m-auto w-5 h-5"
-                                                fill="none"
-                                                stroke={isLight ? '#333' : '#fff'}
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                            </svg>
+                                            <IconRenderer name="LuCheck" className={`absolute inset-0 m-auto w-5 h-5 ${isLight ? 'text-gray-800' : 'text-white'}`} />
                                         )}
                                     </button>
                                 );
@@ -389,39 +377,34 @@ export default function ProductDetailPage() {
 
                     {/* ─── Quantity + Add to Cart ─────────────────── */}
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center border dark:border-gray-700 rounded-xl overflow-hidden">
+                        <div className="flex items-center gap-4 bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 border dark:border-gray-700">
                             <button
                                 onClick={() => setQty((q) => Math.max(1, q - 1))}
-                                disabled={qty <= 1}
-                                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition disabled:opacity-30 disabled:cursor-not-allowed text-lg font-bold"
+                                disabled={isOutOfStock || qty <= 1}
+                                className="w-10 h-10 bg-white dark:bg-gray-700 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 transition disabled:opacity-50 text-gray-600 dark:text-gray-300"
                             >
-                                −
+                                <IconRenderer name="LuMinus" className="w-4 h-4" />
                             </button>
-                            <span className="w-10 h-10 flex items-center justify-center text-sm font-bold border-x dark:border-gray-700">
-                                {qty}
-                            </span>
+                            <span className="font-bold w-4 text-center">{qty}</span>
                             <button
                                 onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
-                                disabled={qty >= maxQty}
-                                className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 transition disabled:opacity-30 disabled:cursor-not-allowed text-lg font-bold"
+                                disabled={isOutOfStock || qty >= maxQty}
+                                className="w-10 h-10 bg-white dark:bg-gray-700 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-600 transition disabled:opacity-50 text-gray-600 dark:text-gray-300"
                             >
-                                +
+                                <IconRenderer name="LuPlus" className="w-4 h-4" />
                             </button>
                         </div>
-
                         <button
                             onClick={handleAddToCart}
                             disabled={!selectedVariant || isOutOfStock}
-                            className="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 active:scale-[0.98]"
+                            className="cursor-pointer flex-1 bg-blue-600 capitalize text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center justify-center gap-2 active:scale-[0.98]"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
-                            </svg>
+                            <IconRenderer name="LuShoppingCart" className="w-5 h-5" />
                             {!selectedVariant
-                                ? 'Select Variant'
+                                ? 'select variant'
                                 : isOutOfStock
-                                    ? 'Out of Stock'
-                                    : 'Add to Cart'}
+                                    ? 'out of stock'
+                                    : 'add to cart'}
                         </button>
                     </div>
                 </div>

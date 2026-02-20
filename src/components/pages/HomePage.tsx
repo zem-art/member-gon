@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import ProductCard from '../features/ProductCard';
 import ProductCardSkeleton from '../features/ProductCardSkeleton';
 import { useInfiniteProducts } from '../../hooks/useInfiniteProducts';
+import { IconRenderer } from '../icons/IconRenderer';
+
 
 export default function HomePage() {
     const { products, loading, initialLoading, hasMore, error, search, retry, handleSearch, sentinelRef } =
@@ -50,19 +52,7 @@ export default function HomePage() {
             {/* Search Bar */}
             <div id="product-list" className="relative">
                 <div className="relative">
-                    <svg
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                        />
-                    </svg>
+                    <IconRenderer name="LuSearch" className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500 pointer-events-none" />
                     <input
                         type="text"
                         value={inputValue}
@@ -75,7 +65,7 @@ export default function HomePage() {
                             onClick={clearSearch}
                             className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition text-gray-500 dark:text-gray-400 text-xs"
                         >
-                            ✕
+                            <IconRenderer name="LuX" className="w-3.5 h-3.5" />
                         </button>
                     )}
                 </div>
@@ -95,8 +85,8 @@ export default function HomePage() {
                     ? Array.from({ length: 8 }).map((_, i) => (
                         <ProductCardSkeleton key={`skeleton-init-${i}`} />
                     ))
-                    : products.map((product) => (
-                        <ProductCard key={product._id} product={product} />
+                    : products.map((product, idx) => (
+                        <ProductCard key={idx} product={product} />
                     ))}
 
                 {/* Skeleton loaders for next page */}
@@ -115,9 +105,7 @@ export default function HomePage() {
                 <div className="flex flex-col items-center gap-4 py-8">
                     <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-2xl p-6 max-w-sm w-full text-center">
                         <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-red-100 dark:bg-red-900/50 flex items-center justify-center">
-                            <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <IconRenderer name="LuCircleAlert" className="w-6 h-6 text-red-500" />
                         </div>
                         <p className="text-red-600 dark:text-red-400 text-sm font-medium mb-1">
                             Failed to load products
@@ -129,9 +117,7 @@ export default function HomePage() {
                             onClick={retry}
                             className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition active:scale-95"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
+                            <IconRenderer name="LuRefreshCw" className="w-4 h-4" />
                             Try Again
                         </button>
                     </div>
@@ -142,9 +128,7 @@ export default function HomePage() {
             {!hasMore && !loading && products.length === 0 && search && (
                 <div className="text-center py-12">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <IconRenderer name="LuSearch" className="w-8 h-8 text-gray-400" />
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 font-medium">No products found</p>
                     <p className="text-gray-400 dark:text-gray-600 text-sm mt-1">Try a different keyword</p>

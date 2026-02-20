@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '../../stores/useOrderStore';
 import { useUIStore } from '../../stores/useUIStore';
+import { IconRenderer } from '../icons/IconRenderer';
 
 export default function PaymentPage() {
     const navigate = useNavigate();
@@ -36,10 +37,7 @@ export default function PaymentPage() {
         <section className="max-w-xl mx-auto space-y-6">
             <div className="bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-sm border dark:border-gray-800 text-center transition-colors">
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="2" y="5" width="20" height="14" rx="2" />
-                        <line x1="2" y1="10" x2="22" y2="10" />
-                    </svg>
+                    <IconRenderer name="LuCreditCard" className="w-8 h-8" />
                 </div>
 
                 <h2 className="text-2xl font-bold mb-2">Complete Your Payment</h2>

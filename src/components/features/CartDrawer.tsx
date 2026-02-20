@@ -1,4 +1,5 @@
 import { useCartStore } from '../../stores/useCartStore';
+import { IconRenderer } from '../icons/IconRenderer';
 
 export default function CartDrawer() {
     const { cart, isCartOpen, toggleCart, updateQty, removeItem, getTotal } = useCartStore();
@@ -23,10 +24,7 @@ export default function CartDrawer() {
                 <div className="p-6 border-b dark:border-gray-800 flex justify-between items-center">
                     <h3 className="text-xl font-bold">Your Cart</h3>
                     <button onClick={toggleCart} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
+                        <IconRenderer name="LuX" className="w-6 h-6" />
                     </button>
                 </div>
 
@@ -67,9 +65,7 @@ export default function CartDrawer() {
                                             title="Remove"
                                             className="cursor-pointer w-6 h-6 ml-auto rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition"
                                         >
-                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
+                                            <IconRenderer name="LuTrash2" className="w-3.5 h-3.5" />
                                         </button>
                                     </div>
                                 </div>
@@ -89,9 +85,9 @@ export default function CartDrawer() {
                     <button
                         disabled={cart.length === 0}
                         onClick={openCheckout}
-                        className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="capitalize cursor-pointer w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 dark:shadow-blue-900/30 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Proceed to Checkout
+                        proceed to checkout
                     </button>
                 </div>
             </div>

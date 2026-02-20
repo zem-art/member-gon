@@ -45,7 +45,7 @@ export function useInfiniteProducts() {
             setError(null);
             retryCountRef.current = 0;
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Gagal memuat produk';
+            const message = err instanceof Error ? err.message : 'Failed to load products';
 
             if (retryCountRef.current < MAX_AUTO_RETRIES) {
                 retryCountRef.current += 1;

@@ -26,7 +26,7 @@ export default function ProductCard({ product }: Props) {
                 </span>
                 {isOutOfStock && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <span className="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Stok Habis</span>
+                        <span className="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Out of Stock</span>
                     </div>
                 )}
             </div>
@@ -41,10 +41,10 @@ export default function ProductCard({ product }: Props) {
                 </p>
                 <div className="flex items-center justify-between">
                     <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                        Stok: {product.stock}
+                        Stock: {product.stock}
                     </span>
                     <span className="text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center gap-1 group-hover:translate-x-1 transition">
-                        Lihat Detail
+                        View Details
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                         </svg>

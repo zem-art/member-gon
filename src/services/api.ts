@@ -43,7 +43,7 @@ async function apiFetch<T>(
 /** GET /products — Fetch all products */
 export async function fetchProducts(): Promise<Product[]> {
   if (API_BASE_URL) {
-    return apiFetch<Product[]>("/products");
+    return apiFetch<Product[]>("/public/products");
   }
   return Promise.resolve(PRODUCTS);
 }
@@ -60,9 +60,20 @@ export async function fetchProductsPaginated(
       limit: String(limit),
     });
     if (search) params.set("name", search);
-    return apiFetch<PaginatedResponse<Product>>(
-      `/products?${params.toString()}`,
+
+    // Real API returns envelope: { status, status_code, message, data: Product[] }
+    // with NO pagination metadata — so we normalize it here.
+    const envelope = await apiFetch<{ data: Product[] }>(
+      `/public/products?${params.toString()}`,
     );
+    const data = envelope.data ?? [];
+    return {
+      data,
+      page,
+      limit,
+      total: 0, // API doesn't provide total; not critical for infinite scroll
+      hasMore: data.length >= limit, // if full page received → likely more
+    };
   }
 
   // Fallback: simulate paginated + search response from static data
@@ -88,10 +99,51 @@ export async function fetchProductsPaginated(
   };
 }
 
-/** GET /products/:id — Fetch single product with variants */
+/** GET /products/:id/details — Fetch single product with variants */
 export async function fetchProductById(id: string): Promise<ProductDetail | null> {
   if (API_BASE_URL) {
-    return apiFetch<ProductDetail>(`/products/${id}`);
+    try {
+      // Real API returns envelope: { status, data: { product_id, brand: { name_brand }, ... } }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const envelope = await apiFetch<{ data: any }>(`/public/product/${id}/details`);
+      const raw = envelope.data ?? envelope;
+
+      // Map variants from API format to our ProductVariant
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const variants = (raw.variants ?? []).map((v: any) => ({
+        sku: v.sku,
+        color: v.variant2_color ?? "",
+        size: v.variant1_size ?? "",
+        stock: v.stock ?? 0,
+        price: v.price_tags ?? 0,
+      }));
+
+      // Compute price range from actual variants
+      const prices = variants.map((v: { price: number }) => v.price).filter((p: number) => p > 0);
+      const priceMin = prices.length > 0 ? Math.min(...prices) : 0;
+      const priceMax = prices.length > 0 ? Math.max(...prices) : 0;
+
+      // Strip HTML tags from description
+      const rawDesc: string = raw.description ?? "";
+      const description = rawDesc.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+
+      return {
+        _id: raw.product_id ?? id,
+        product_id: raw.product_id ?? id,
+        name_product: raw.name_product ?? "",
+        thumbnail: raw.thumbnails_main ?? (raw.thumbnails?.[0] ?? ""),
+        stock: variants.reduce((acc: number, v: { stock: number }) => acc + v.stock, 0),
+        brand: typeof raw.brand === "object" ? raw.brand?.name_brand ?? "" : raw.brand ?? "",
+        price_min: priceMin,
+        price_max: priceMax,
+        description,
+        images: raw.thumbnails ?? [raw.thumbnails_main ?? ""],
+        variants,
+      };
+    } catch (err) {
+      console.warn(`[fetchProductById] Failed for id="${id}":`, err);
+      return null;
+    }
   }
   // Fallback: generate detail from static data
   await new Promise((r) => setTimeout(r, 300));

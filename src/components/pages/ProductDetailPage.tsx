@@ -8,6 +8,7 @@ import type { ProductDetail, ProductVariant, CartItem } from '../../types';
 
 // ─── Color mapping for visual chips ─────────────────────────────
 const COLOR_MAP: Record<string, string> = {
+    // Mock colors
     Black: '#1a1a1a',
     White: '#f5f5f5',
     Navy: '#1e3a5f',
@@ -16,7 +17,53 @@ const COLOR_MAP: Record<string, string> = {
     'Dusty Pink': '#d4a0a0',
     Cream: '#f5e6c8',
     Grey: '#8a8a8a',
+    // Real API colors
+    AVOCADO: '#568203',
+    CAVIAR: '#292929',
+    SILVER: '#c0c0c0',
+    'BLUE INDIGO': '#3f51b5',
+    BLACK: '#1a1a1a',
+    WHITE: '#f5f5f5',
+    NAVY: '#1e3a5f',
+    MAROON: '#800020',
+    GREY: '#8a8a8a',
+    CREAM: '#f5e6c8',
+    OLIVE: '#6b7c3f',
+    DUSTY: '#d4a0a0',
+    PINK: '#e91e8c',
+    RED: '#e53935',
+    GREEN: '#43a047',
+    BROWN: '#795548',
+    BEIGE: '#d4be8d',
+    ARMY: '#4b5320',
+    MOCCA: '#7b5b3a',
+    BURGUNDY: '#800020',
+    MUSTARD: '#c99700',
+    SAGE: '#9caf88',
+    LILAC: '#c8a2c8',
+    PEACH: '#ffb07c',
+    CORAL: '#ff7f50',
+    MINT: '#98ff98',
+    CHARCOAL: '#36454f',
+    TEAL: '#008080',
+    CARAMEL: '#a0522d',
+    DARK: '#2d2d2d',
 };
+
+/** Get hex color for a color name, with a deterministic fallback */
+function getColorHex(name: string): string {
+    // Direct match
+    if (COLOR_MAP[name]) return COLOR_MAP[name];
+    // Case-insensitive match
+    const upper = name.toUpperCase();
+    const found = Object.entries(COLOR_MAP).find(([k]) => k.toUpperCase() === upper);
+    if (found) return found[1];
+    // Deterministic hash fallback — generate a pastel-ish color
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    const h = Math.abs(hash) % 360;
+    return `hsl(${h}, 45%, 55%)`;
+}
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -46,10 +93,10 @@ export default function ProductDetailPage() {
                     const colors = [...new Set(data.variants.map((v) => v.color))];
                     if (colors.length > 0) setSelectedColor(colors[0]);
                 } else {
-                    setError('Produk tidak ditemukan');
+                    setError('Product not found');
                 }
             })
-            .catch(() => setError('Gagal memuat produk'))
+            .catch(() => setError('Failed to load product'))
             .finally(() => setLoading(false));
     }, [id]);
 
@@ -99,7 +146,7 @@ export default function ProductDetailPage() {
         };
         addToCart(cartItem);
         showToast(
-            `${product.name_product} (${selectedVariant.color}/${selectedVariant.size}) x${qty} ditambahkan ke keranjang!`,
+            `${product.name_product} (${selectedVariant.color}/${selectedVariant.size}) x${qty} added to cart!`,
         );
     };
 
@@ -121,9 +168,9 @@ export default function ProductDetailPage() {
         // Fallback: copy link to clipboard
         try {
             await navigator.clipboard.writeText(url);
-            showToast('Link produk berhasil disalin! 📋');
+            showToast('Product link copied! 📋');
         } catch {
-            showToast('Gagal menyalin link');
+            showToast('Failed to copy link');
         }
     };
 
@@ -163,19 +210,19 @@ export default function ProductDetailPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <h2 className="text-xl font-bold mb-2">{error || 'Produk tidak ditemukan'}</h2>
+                <h2 className="text-xl font-bold mb-2">{error || 'Product not found'}</h2>
                 <button
                     onClick={() => navigate('/')}
                     className="mt-4 text-blue-600 dark:text-blue-400 font-bold text-sm hover:underline"
                 >
-                    ← Kembali ke beranda
+                    ← Back to home
                 </button>
             </div>
         );
     }
 
     return (
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto overflow-hidden">
             {/* Back button */}
             <button
                 onClick={() => navigate('/')}
@@ -184,13 +231,13 @@ export default function ProductDetailPage() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Kembali
+                Back
             </button>
 
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-12">
                 {/* ─── Image Gallery ──────────────────────────────── */}
-                <div className="space-y-4">
-                    <div className="aspect-square rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-800 border dark:border-gray-700">
+                <div className="space-y-3 min-w-0">
+                    <div className="aspect-[4/5] md:aspect-square rounded-2xl md:rounded-3xl overflow-hidden bg-gray-50 dark:bg-gray-800 border dark:border-gray-700">
                         <img
                             src={product.images[activeImage]}
                             alt={product.name_product}
@@ -198,12 +245,12 @@ export default function ProductDetailPage() {
                         />
                     </div>
                     {product.images.length > 1 && (
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
                             {product.images.map((img, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setActiveImage(i)}
-                                    className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition ${activeImage === i
+                                    className={`w-14 h-14 md:w-16 md:h-16 rounded-lg md:rounded-xl overflow-hidden border-2 transition shrink-0 ${activeImage === i
                                         ? 'border-blue-600 ring-2 ring-blue-200 dark:ring-blue-900'
                                         : 'border-transparent opacity-60 hover:opacity-100'
                                         }`}
@@ -230,7 +277,7 @@ export default function ProductDetailPage() {
                             </div>
                             <button
                                 onClick={handleShare}
-                                title="Bagikan produk"
+                                title="Share product"
                                 className="p-2.5 rounded-xl border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 shrink-0 ml-4"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -257,12 +304,13 @@ export default function ProductDetailPage() {
                     {/* ─── Color Selector ─────────────────────────── */}
                     <div>
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 block">
-                            Warna: <span className="text-gray-400 font-normal">{selectedColor}</span>
+                            Color: <span className="text-gray-400 font-normal">{selectedColor}</span>
                         </label>
                         <div className="flex flex-wrap gap-3">
                             {availableColors.map((color) => {
-                                const hex = COLOR_MAP[color] || '#888';
+                                const hex = getColorHex(color);
                                 const isActive = selectedColor === color;
+                                const isLight = ['WHITE', 'CREAM', 'SILVER', 'BEIGE', 'MINT', 'PEACH'].includes(color.toUpperCase());
                                 return (
                                     <button
                                         key={color}
@@ -278,7 +326,7 @@ export default function ProductDetailPage() {
                                             <svg
                                                 className="absolute inset-0 m-auto w-5 h-5"
                                                 fill="none"
-                                                stroke={color === 'White' || color === 'Cream' ? '#333' : '#fff'}
+                                                stroke={isLight ? '#333' : '#fff'}
                                                 viewBox="0 0 24 24"
                                             >
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -293,7 +341,7 @@ export default function ProductDetailPage() {
                     {/* ─── Size Selector ──────────────────────────── */}
                     <div>
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 block">
-                            Ukuran
+                            Size
                         </label>
                         <div className="flex flex-wrap gap-2">
                             {availableSizes.map((size) => {
@@ -330,10 +378,10 @@ export default function ProductDetailPage() {
                                 : 'text-red-500'
                             }`}>
                             {selectedVariant.stock > 5
-                                ? `Stok tersedia: ${selectedVariant.stock}`
+                                ? `In stock: ${selectedVariant.stock}`
                                 : selectedVariant.stock > 0
-                                    ? `Sisa ${selectedVariant.stock} lagi!`
-                                    : 'Stok habis'}
+                                    ? `Only ${selectedVariant.stock} left!`
+                                    : 'Out of stock'}
                         </p>
                     )}
 
@@ -370,10 +418,10 @@ export default function ProductDetailPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
                             </svg>
                             {!selectedVariant
-                                ? 'Pilih Varian'
+                                ? 'Select Variant'
                                 : isOutOfStock
-                                    ? 'Stok Habis'
-                                    : 'Tambah ke Keranjang'}
+                                    ? 'Out of Stock'
+                                    : 'Add to Cart'}
                         </button>
                     </div>
                 </div>

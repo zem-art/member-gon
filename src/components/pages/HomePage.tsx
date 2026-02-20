@@ -67,7 +67,7 @@ export default function HomePage() {
                         type="text"
                         value={inputValue}
                         onChange={(e) => onSearchChange(e.target.value)}
-                        placeholder="Cari produk berdasarkan nama..."
+                        placeholder="Search products by name..."
                         className="w-full pl-12 pr-12 py-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition shadow-sm placeholder:text-gray-400 dark:placeholder:text-gray-600"
                     />
                     {inputValue && (
@@ -82,8 +82,8 @@ export default function HomePage() {
                 {search && !initialLoading && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 ml-1">
                         {products.length > 0
-                            ? `Menampilkan hasil untuk "${search}"`
-                            : `Tidak ada produk dengan nama "${search}"`}
+                            ? `Showing results for "${search}"`
+                            : `No products found for "${search}"`}
                     </p>
                 )}
             </div>
@@ -120,7 +120,7 @@ export default function HomePage() {
                             </svg>
                         </div>
                         <p className="text-red-600 dark:text-red-400 text-sm font-medium mb-1">
-                            Gagal memuat produk
+                            Failed to load products
                         </p>
                         <p className="text-red-400 dark:text-red-500 text-xs mb-4">
                             {error}
@@ -132,7 +132,7 @@ export default function HomePage() {
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            Coba Lagi
+                            Try Again
                         </button>
                     </div>
                 </div>
@@ -146,8 +146,8 @@ export default function HomePage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">Produk tidak ditemukan</p>
-                    <p className="text-gray-400 dark:text-gray-600 text-sm mt-1">Coba kata kunci lain</p>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">No products found</p>
+                    <p className="text-gray-400 dark:text-gray-600 text-sm mt-1">Try a different keyword</p>
                 </div>
             )}
 
@@ -156,7 +156,7 @@ export default function HomePage() {
                 <div className="text-center py-6">
                     <div className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-600 text-sm">
                         <span className="h-px w-8 bg-gray-200 dark:bg-gray-700" />
-                        Semua produk sudah ditampilkan
+                        All products have been displayed
                         <span className="h-px w-8 bg-gray-200 dark:bg-gray-700" />
                     </div>
                 </div>

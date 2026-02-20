@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-const DEFAULT_TITLE = "BeliKilat — Belanja Cepat, Harga Kilat ⚡";
+const DEFAULT_TITLE = "BeliKilat — Fast Shopping, Best Prices ⚡";
 const DEFAULT_DESCRIPTION =
-    "Platform belanja online cepat dan terpercaya. Temukan produk berkualitas dari berbagai brand.";
+    "Fast and trusted online shopping platform. Find quality products from various brands.";
 
 interface PageMetaOptions {
     title?: string;

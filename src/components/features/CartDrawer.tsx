@@ -64,7 +64,7 @@ export default function CartDrawer() {
                                         </button>
                                         <button
                                             onClick={() => removeItem(item.variant_sku)}
-                                            title="Hapus"
+                                            title="Remove"
                                             className="cursor-pointer w-6 h-6 ml-auto rounded-full flex items-center justify-center text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 transition"
                                         >
                                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

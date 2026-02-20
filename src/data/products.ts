@@ -51,7 +51,7 @@ function hashCode(s: string): number {
 // ─── Generate mock ProductDetail ────────────────────────────────
 const DESCRIPTIONS: Record<string, string> = {
   default:
-    "Produk berkualitas tinggi dengan bahan pilihan. Nyaman dipakai sehari-hari untuk berbagai aktivitas. Tersedia dalam beberapa pilihan warna dan ukuran.",
+    "High-quality product made with premium materials. Comfortable for daily wear and various activities. Available in multiple color and size options.",
 };
 
 export function generateMockDetail(product: Product): ProductDetail {

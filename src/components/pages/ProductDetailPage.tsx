@@ -66,6 +66,12 @@ function getColorHex(name: string): string {
     return `hsl(${h}, 45%, 55%)`;
 }
 
+// ─── Discount ────────────────────────────────────────────────────
+const DISCOUNT_RATE = 0.1; // 10%
+function applyDiscount(price: number): number {
+    return Math.round(price * (1 - DISCOUNT_RATE));
+}
+
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -135,6 +141,7 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = () => {
         if (!product || !selectedVariant) return;
+        const discountedPrice = applyDiscount(selectedVariant.price);
         const cartItem: CartItem = {
             product_id: product._id,
             variant_sku: selectedVariant.sku,
@@ -142,7 +149,7 @@ export default function ProductDetailPage() {
             thumbnail: product.thumbnail,
             color: selectedVariant.color,
             size: selectedVariant.size,
-            price: selectedVariant.price,
+            price: discountedPrice,
             qty,
         };
         addToCart(cartItem);
@@ -282,11 +289,33 @@ export default function ProductDetailPage() {
                         </div>
                     </div>
 
-                    {/* Price */}
-                    <div className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
-                        {selectedVariant
-                            ? `Rp ${selectedVariant.price.toLocaleString('id-ID')}`
-                            : `Rp ${product.price_min.toLocaleString('id-ID')} - ${product.price_max.toLocaleString('id-ID')}`}
+                    {/* Price with 10% discount */}
+                    <div className="space-y-1">
+                        {selectedVariant ? (
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <span className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                    Rp {applyDiscount(selectedVariant.price).toLocaleString('id-ID')}
+                                </span>
+                                <span className="text-base md:text-lg text-gray-400 line-through">
+                                    Rp {selectedVariant.price.toLocaleString('id-ID')}
+                                </span>
+                                <span className="bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-lg">
+                                    10% OFF
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-3 flex-wrap">
+                                <span className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                    Rp {applyDiscount(product.price_min).toLocaleString('id-ID')} - {applyDiscount(product.price_max).toLocaleString('id-ID')}
+                                </span>
+                                <span className="text-base md:text-lg text-gray-400 line-through">
+                                    Rp {product.price_min.toLocaleString('id-ID')} - {product.price_max.toLocaleString('id-ID')}
+                                </span>
+                                <span className="bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-lg">
+                                    10% OFF
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Description */}
@@ -301,25 +330,19 @@ export default function ProductDetailPage() {
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 block">
                             Color: <span className="text-gray-400 font-normal">{selectedColor}</span>
                         </label>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
                             {availableColors.map((color) => {
-                                const hex = getColorHex(color);
                                 const isActive = selectedColor === color;
-                                const isLight = ['WHITE', 'CREAM', 'SILVER', 'BEIGE', 'MINT', 'PEACH'].includes(color.toUpperCase());
                                 return (
                                     <button
                                         key={color}
                                         onClick={() => setSelectedColor(color)}
-                                        title={color}
-                                        className={`w-10 h-10 rounded-full border-2 transition-all relative ${isActive
-                                            ? 'border-blue-600 ring-4 ring-blue-100 dark:ring-blue-900/50 scale-110'
-                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
+                                        className={`px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${isActive
+                                            ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/30'
+                                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500'
                                             }`}
-                                        style={{ backgroundColor: hex }}
                                     >
-                                        {isActive && (
-                                            <IconRenderer name="LuCheck" className={`absolute inset-0 m-auto w-5 h-5 ${isLight ? 'text-gray-800' : 'text-white'}`} />
-                                        )}
+                                        {color}
                                     </button>
                                 );
                             })}

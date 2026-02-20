@@ -7,64 +7,6 @@ import { usePageMeta } from '../../hooks/usePageMeta';
 import { IconRenderer } from '../icons/IconRenderer';
 import type { ProductDetail, ProductVariant, CartItem } from '../../types';
 
-// ─── Color mapping for visual chips ─────────────────────────────
-const COLOR_MAP: Record<string, string> = {
-    // Mock colors
-    Black: '#1a1a1a',
-    White: '#f5f5f5',
-    Navy: '#1e3a5f',
-    Maroon: '#800020',
-    Olive: '#6b7c3f',
-    'Dusty Pink': '#d4a0a0',
-    Cream: '#f5e6c8',
-    Grey: '#8a8a8a',
-    // Real API colors
-    AVOCADO: '#568203',
-    CAVIAR: '#292929',
-    SILVER: '#c0c0c0',
-    'BLUE INDIGO': '#3f51b5',
-    BLACK: '#1a1a1a',
-    WHITE: '#f5f5f5',
-    NAVY: '#1e3a5f',
-    MAROON: '#800020',
-    GREY: '#8a8a8a',
-    CREAM: '#f5e6c8',
-    OLIVE: '#6b7c3f',
-    DUSTY: '#d4a0a0',
-    PINK: '#e91e8c',
-    RED: '#e53935',
-    GREEN: '#43a047',
-    BROWN: '#795548',
-    BEIGE: '#d4be8d',
-    ARMY: '#4b5320',
-    MOCCA: '#7b5b3a',
-    BURGUNDY: '#800020',
-    MUSTARD: '#c99700',
-    SAGE: '#9caf88',
-    LILAC: '#c8a2c8',
-    PEACH: '#ffb07c',
-    CORAL: '#ff7f50',
-    MINT: '#98ff98',
-    CHARCOAL: '#36454f',
-    TEAL: '#008080',
-    CARAMEL: '#a0522d',
-    DARK: '#2d2d2d',
-};
-
-/** Get hex color for a color name, with a deterministic fallback */
-function getColorHex(name: string): string {
-    // Direct match
-    if (COLOR_MAP[name]) return COLOR_MAP[name];
-    // Case-insensitive match
-    const upper = name.toUpperCase();
-    const found = Object.entries(COLOR_MAP).find(([k]) => k.toUpperCase() === upper);
-    if (found) return found[1];
-    // Deterministic hash fallback — generate a pastel-ish color
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    const h = Math.abs(hash) % 360;
-    return `hsl(${h}, 45%, 55%)`;
-}
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -133,8 +75,19 @@ export default function ProductDetailPage() {
         setQty(1);
     }, [selectedColor, availableSizes.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+    const DISCOUNT_PERCENTAGE = 0.1;
+    const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
+    const maxQty = selectedVariant ? selectedVariant.stock : 1;
+
+    // Price calculations
+    const getDiscountedPrice = (price: number) => Math.round(price * (1 - DISCOUNT_PERCENTAGE));
+
+    const currentPrice = selectedVariant ? selectedVariant.price : (product?.price_min || 0);
+    const discountedPrice = getDiscountedPrice(currentPrice);
+
     const handleAddToCart = () => {
         if (!product || !selectedVariant) return;
+        const finalPrice = getDiscountedPrice(selectedVariant.price);
         const cartItem: CartItem = {
             product_id: product._id,
             variant_sku: selectedVariant.sku,
@@ -142,7 +95,7 @@ export default function ProductDetailPage() {
             thumbnail: product.thumbnail,
             color: selectedVariant.color,
             size: selectedVariant.size,
-            price: selectedVariant.price,
+            price: finalPrice,
             qty,
         };
         addToCart(cartItem);
@@ -154,7 +107,11 @@ export default function ProductDetailPage() {
     const handleShare = async () => {
         if (!product) return;
         const url = window.location.href;
-        const text = `${product.name_product} — Rp ${product.price_min.toLocaleString('id-ID')}${product.price_min !== product.price_max ? ` - ${product.price_max.toLocaleString('id-ID')}` : ''}`;
+        const priceDisplay = selectedVariant
+            ? `Rp ${getDiscountedPrice(selectedVariant.price).toLocaleString('id-ID')}`
+            : `Rp ${getDiscountedPrice(product.price_min).toLocaleString('id-ID')} - ${getDiscountedPrice(product.price_max).toLocaleString('id-ID')}`;
+
+        const text = `${product.name_product} — ${priceDisplay} (10% OFF)`;
 
         // Try native Web Share API (mobile + some desktops)
         if (navigator.share) {
@@ -174,9 +131,6 @@ export default function ProductDetailPage() {
             showToast('Failed to copy link');
         }
     };
-
-    const isOutOfStock = selectedVariant ? selectedVariant.stock <= 0 : false;
-    const maxQty = selectedVariant ? selectedVariant.stock : 1;
 
     // Dynamic SEO
     usePageMeta({
@@ -283,10 +237,20 @@ export default function ProductDetailPage() {
                     </div>
 
                     {/* Price */}
-                    <div className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
-                        {selectedVariant
-                            ? `Rp ${selectedVariant.price.toLocaleString('id-ID')}`
-                            : `Rp ${product.price_min.toLocaleString('id-ID')} - ${product.price_max.toLocaleString('id-ID')}`}
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-3">
+                            <span className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                Rp {discountedPrice.toLocaleString('id-ID')}
+                            </span>
+                            <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold rounded-md uppercase tracking-wide">
+                                10% OFF
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+                            <span className="line-through">
+                                Rp {currentPrice.toLocaleString('id-ID')}
+                            </span>
+                        </div>
                     </div>
 
                     {/* Description */}
@@ -299,27 +263,21 @@ export default function ProductDetailPage() {
                     {/* ─── Color Selector ─────────────────────────── */}
                     <div>
                         <label className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-3 block">
-                            Color: <span className="text-gray-400 font-normal">{selectedColor}</span>
+                            Color
                         </label>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-2">
                             {availableColors.map((color) => {
-                                const hex = getColorHex(color);
                                 const isActive = selectedColor === color;
-                                const isLight = ['WHITE', 'CREAM', 'SILVER', 'BEIGE', 'MINT', 'PEACH'].includes(color.toUpperCase());
                                 return (
                                     <button
                                         key={color}
                                         onClick={() => setSelectedColor(color)}
-                                        title={color}
-                                        className={`w-10 h-10 rounded-full border-2 transition-all relative ${isActive
-                                            ? 'border-blue-600 ring-4 ring-blue-100 dark:ring-blue-900/50 scale-110'
-                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-500'
+                                        className={`px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all ${isActive
+                                            ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-200 dark:shadow-blue-900/30'
+                                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500'
                                             }`}
-                                        style={{ backgroundColor: hex }}
                                     >
-                                        {isActive && (
-                                            <IconRenderer name="LuCheck" className={`absolute inset-0 m-auto w-5 h-5 ${isLight ? 'text-gray-800' : 'text-white'}`} />
-                                        )}
+                                        {color}
                                     </button>
                                 );
                             })}

@@ -20,7 +20,7 @@ export default function MobileNav() {
                 className={`flex flex-col items-center gap-1 ${isActive('/') ? 'text-blue-600 border-t-2 border-blue-600' : 'text-gray-400'
                     }`}
             >
-                <IconRenderer name="LuHome" className="w-[22px] h-[22px]" />
+                <IconRenderer name="LuLayoutDashboard" className="w-[22px] h-[22px]" />
                 <span className="text-[10px] font-bold">Home</span>
             </button>
 

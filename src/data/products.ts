@@ -33,6 +33,7 @@ function generateVariants(product: Product): ProductVariant[] {
         size,
         stock,
         price: product.price_min + priceVariation,
+        weight: product.weight || 100,
       });
     }
   }
@@ -82,6 +83,7 @@ export const PRODUCTS: Product[] = [
     brand: "jilbab nibras",
     price_min: 39000,
     price_max: 49000,
+    weight: 100,
   },
   {
     _id: "BCG011",
@@ -92,6 +94,7 @@ export const PRODUCTS: Product[] = [
     brand: "nbrs",
     price_min: 178000,
     price_max: 218000,
+    weight: 350,
   },
   {
     _id: "HJB001",

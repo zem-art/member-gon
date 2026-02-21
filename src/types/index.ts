@@ -8,6 +8,7 @@ export interface Product {
   brand: string;
   price_min: number;
   price_max: number;
+  weight?: number;      // weight in grams (optional to allow existing mock data)
   // Fields from BE that we receive but don't display in list
   publish?: boolean;
   created_at?: string;
@@ -22,6 +23,7 @@ export interface ProductVariant {
   size: string;      // e.g. "M"
   stock: number;
   price: number;
+  weight?: number;   // weight in grams
 }
 
 // ─── Product Detail (detail page) ───────────────────────────────
@@ -41,6 +43,7 @@ export interface CartItem {
   size: string;
   price: number;
   qty: number;
+  weight: number;      // weight in grams
 }
 
 // ─── Customer & Order ───────────────────────────────────────────
@@ -61,6 +64,16 @@ export interface District {
 export interface SubDistrict {
   subdistrict_id: string;
   subdistrict_name: string;
+  postal_code?: string;
+  kode_origin_jnt?: string;
+  kode_sicepat?: string;
+  kode_destination_jne?: string;
+  kode_ninja_lt1?: string;
+  kode_ninja_lt2?: string;
+  destination_lion_parcel_code?: string;
+  destination_sapx_code?: string;
+  wahana_destination_code?: string;
+  destination_raja_ongkir?: string;
 }
 
 export interface AreaGroup {
@@ -85,11 +98,39 @@ export interface CustomerInfo {
   bank: string;
 }
 
-export interface PaymentMethod {
-  id: string;
+export interface PaymentMethodData {
+  bank_code: string;
+  bank_name: string;
   name: string;
-  code: string;
-  type: "va" | "ewallet" | "bank_transfer";
+  status: boolean;
+  type: string;
+}
+
+export interface PaymentMethodsResponse {
+  VA: PaymentMethodData[];
+  WA: PaymentMethodData[];
+  SB: PaymentMethodData[];
+}
+
+// ─── Shipping Rates ─────────────────────────────────────────────
+export interface ShippingRateItem {
+  provider: string;
+  rate_id: string;
+  finalRate: number;
+  etd: string;
+}
+
+export interface ShippingRatesResponse {
+  items: {
+    ninja: ShippingRateItem[];
+    jne: ShippingRateItem[];
+    wahana: ShippingRateItem[];
+    rajaongkir: ShippingRateItem[];
+    lion_parcel: ShippingRateItem[];
+    sapx: ShippingRateItem[];
+    jnt: ShippingRateItem[];
+    everpro: ShippingRateItem[];
+  };
 }
 
 export interface PaymentDetail {

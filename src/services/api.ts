@@ -4,7 +4,8 @@ import type {
   Order,
   CustomerInfo,
   CartItem,
-  PaymentMethod,
+  PaymentMethodData,
+  PaymentMethodsResponse,
   PaymentDetail,
   TrackingInfo,
   PaginatedResponse,
@@ -13,6 +14,8 @@ import type {
   District,
   SubDistrict,
   AreaGroup,
+  ShippingRateItem,
+  ShippingRatesResponse,
 } from "../types";
 import { PRODUCTS, generateMockDetail } from "../data/products";
 import { getGuestId } from "../utils/guestId";
@@ -141,6 +144,7 @@ export async function fetchProductById(id: string): Promise<ProductDetail | null
         brand: typeof raw.brand === "object" ? raw.brand?.name_brand ?? "" : raw.brand ?? "",
         price_min: priceMin,
         price_max: priceMax,
+        weight: raw.weight ?? 100, // Default to 100g if missing
         description,
         images: raw.thumbnails ?? [raw.thumbnails_main ?? ""],
         variants,
@@ -315,24 +319,26 @@ export async function confirmPayment(
 
 // ─── Payment Methods ────────────────────────────────────────────
 
-const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
-  {
-    id: "mandiri",
-    name: "Mandiri Virtual Account",
-    code: "mandiri",
-    type: "va",
-  },
-  { id: "bca", name: "BCA Virtual Account", code: "bca", type: "va" },
-  { id: "bni", name: "BNI Virtual Account", code: "bni", type: "va" },
-  { id: "bri", name: "BRI Virtual Account", code: "bri", type: "va" },
-];
-
-/** GET /payment-methods — Fetch available payment methods */
-export async function getPaymentMethods(): Promise<PaymentMethod[]> {
+/** GET /payment/list/bank — Fetch available payment methods */
+export async function fetchPaymentMethodsData(): Promise<PaymentMethodsResponse> {
   if (API_BASE_URL) {
-    return apiFetch<PaymentMethod[]>("/payment-methods");
+    const envelope = await apiFetch<{ data: PaymentMethodsResponse }>("/payment/list/bank");
+    return envelope.data ?? { VA: [], WA: [], SB: [] };
   }
-  return Promise.resolve(DEFAULT_PAYMENT_METHODS);
+  return {
+    VA: [
+      { bank_code: "bca", bank_name: "BCA", name: "BCA", status: true, type: "virtual_account" },
+      { bank_code: "mandiri", bank_name: "Mandiri", name: "Mandiri", status: true, type: "virtual_account" },
+    ],
+    WA: [{ bank_code: "qris", bank_name: "QRIS", name: "QRIS", status: true, type: "wallet_account" }],
+    SB: [],
+  };
+}
+
+/** Legacy support or simplified fetch */
+export async function getPaymentMethods(): Promise<PaymentMethodData[]> {
+  const data = await fetchPaymentMethodsData();
+  return [...data.VA, ...data.WA];
 }
 
 // ─── Geographic / Shipping ──────────────────────────────────────
@@ -400,4 +406,36 @@ export async function fetchAreaGroup(
     }
   }
   return null;
+}
+
+/** POST /shipping/ongkir — Fetch shipping rates */
+export async function fetchShippingRates(
+  destination: any,
+  weightInGrams: number,
+): Promise<ShippingRatesResponse> {
+  if (API_BASE_URL) {
+    return apiFetch<ShippingRatesResponse>("/shipping/ongkir", {
+      method: "POST",
+      body: JSON.stringify({
+        data: {
+          id_tujuan: destination,
+          berat: weightInGrams,
+        },
+      }),
+    });
+  }
+  // Mock response for local development
+  return {
+    items: {
+      ninja: [], jne: [], wahana: [], rajaongkir: [], lion_parcel: [], sapx: [], jnt: [],
+      everpro: [
+        {
+          provider: "EVERPRO",
+          rate_id: "SPX Express | Mock | SPXSTD",
+          finalRate: 46500,
+          etd: "3 - 6 DAY",
+        }
+      ]
+    }
+  };
 }

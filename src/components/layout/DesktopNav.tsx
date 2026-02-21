@@ -25,19 +25,19 @@ export default function DesktopNav() {
             <div className="flex items-center gap-8">
                 <button
                     onClick={() => navigate('/')}
-                    className={`hover:text-blue-600 transition ${location.pathname === '/' ? 'text-blue-600 font-semibold' : ''}`}
+                    className={`hover:text-blue-600 cursor-pointer transition ${location.pathname === '/' ? 'text-blue-600 font-semibold' : ''}`}
                 >
                     Home
                 </button>
                 <button
                     onClick={() => navigate('/tracking')}
-                    className={`hover:text-blue-600 transition ${location.pathname === '/tracking' ? 'text-blue-600 font-semibold' : ''}`}
+                    className={`hover:text-blue-600 cursor-pointer transition ${location.pathname === '/tracking' ? 'text-blue-600 font-semibold' : ''}`}
                 >
                     Track Order
                 </button>
                 <button
                     onClick={() => navigate('/history')}
-                    className={`hover:text-blue-600 transition ${location.pathname === '/history' ? 'text-blue-600 font-semibold' : ''}`}
+                    className={`hover:text-blue-600 cursor-pointer transition ${location.pathname === '/history' ? 'text-blue-600 font-semibold' : ''}`}
                 >
                     History
                 </button>
@@ -45,7 +45,7 @@ export default function DesktopNav() {
                 {/* Theme Toggle */}
                 <button
                     onClick={toggleTheme}
-                    className="p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                    className="p-2 bg-gray-100 cursor-pointer dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                     title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                 >
                     {theme === 'dark' ? (
@@ -58,7 +58,7 @@ export default function DesktopNav() {
                 {/* Cart */}
                 <button
                     onClick={toggleCart}
-                    className="relative p-2 bg-gray-100 dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+                    className="relative p-2 bg-gray-100 cursor-pointer dark:bg-gray-800 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
                 >
                     <IconRenderer name="LuShoppingCart" className="w-5 h-5" />
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 flex items-center justify-center rounded-full border-2 border-white dark:border-gray-900">

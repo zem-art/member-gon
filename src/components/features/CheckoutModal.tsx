@@ -166,8 +166,6 @@ export default function CheckoutModal() {
         const provinceName = provinces.find(p => p.province_id === selectedProvince)?.province_name || '';
         const cityName = cities.find(c => c.city_id === selectedCity)?.city_name || '';
 
-        console.log(selectedSub);
-
         // Find selected shipping rate details
         let selectedRateInfo: any = { courier: formData.get('courier') as string };
         if (shippingRates) {

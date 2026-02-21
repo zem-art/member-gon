@@ -221,11 +221,16 @@ export default function CheckoutModal() {
         };
 
         try {
-            await createOrder(customer, cart, getTotal());
+            const order = await createOrder(customer, cart, getTotal());
             clearCart();
             setIsOpen(false);
             if (isCartOpen) toggleCart();
-            navigate('/payment');
+
+            if (order.link_url) {
+                window.location.href = order.link_url;
+            } else {
+                navigate('/payment');
+            }
             showToast('Order Created!');
         } catch {
             showToast('Failed to create order. Please try again.');

@@ -75,6 +75,7 @@ export const useOrderStore = create<OrderState>((set) => ({
         total: newOrder.total,
         status: newOrder.status,
         expiredAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        link_url: newOrder.link_url,
       };
 
       set((state) => ({

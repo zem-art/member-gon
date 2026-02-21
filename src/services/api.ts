@@ -89,8 +89,8 @@ export async function fetchProductsPaginated(
 
   const filtered = search
     ? PRODUCTS.filter((p) =>
-      p.name_product.toLowerCase().includes(search.toLowerCase()),
-    )
+        p.name_product.toLowerCase().includes(search.toLowerCase()),
+      )
     : PRODUCTS;
 
   const start = (page - 1) * limit;
@@ -108,12 +108,16 @@ export async function fetchProductsPaginated(
 }
 
 /** GET /products/:id/details — Fetch single product with variants */
-export async function fetchProductById(id: string): Promise<ProductDetail | null> {
+export async function fetchProductById(
+  id: string,
+): Promise<ProductDetail | null> {
   if (API_BASE_URL) {
     try {
       // Real API returns envelope: { status, data: { product_id, brand: { name_brand }, ... } }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const envelope = await apiFetch<{ data: any }>(`/public/product/${id}/details`);
+      const envelope = await apiFetch<{ data: any }>(
+        `/public/product/${id}/details`,
+      );
       const raw = envelope.data ?? envelope;
 
       // Map variants from API format to our ProductVariant
@@ -127,21 +131,32 @@ export async function fetchProductById(id: string): Promise<ProductDetail | null
       }));
 
       // Compute price range from actual variants
-      const prices = variants.map((v: { price: number }) => v.price).filter((p: number) => p > 0);
+      const prices = variants
+        .map((v: { price: number }) => v.price)
+        .filter((p: number) => p > 0);
       const priceMin = prices.length > 0 ? Math.min(...prices) : 0;
       const priceMax = prices.length > 0 ? Math.max(...prices) : 0;
 
       // Strip HTML tags from description
       const rawDesc: string = raw.description ?? "";
-      const description = rawDesc.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+      const description = rawDesc
+        .replace(/<[^>]*>/g, "")
+        .replace(/&nbsp;/g, " ")
+        .trim();
 
       return {
         _id: raw.product_id ?? id,
         product_id: raw.product_id ?? id,
         name_product: raw.name_product ?? "",
-        thumbnail: raw.thumbnails_main ?? (raw.thumbnails?.[0] ?? ""),
-        stock: variants.reduce((acc: number, v: { stock: number }) => acc + v.stock, 0),
-        brand: typeof raw.brand === "object" ? raw.brand?.name_brand ?? "" : raw.brand ?? "",
+        thumbnail: raw.thumbnails_main ?? raw.thumbnails?.[0] ?? "",
+        stock: variants.reduce(
+          (acc: number, v: { stock: number }) => acc + v.stock,
+          0,
+        ),
+        brand:
+          typeof raw.brand === "object"
+            ? (raw.brand?.name_brand ?? "")
+            : (raw.brand ?? ""),
         price_min: priceMin,
         price_max: priceMax,
         weight: raw.weight ?? 100, // Default to 100g if missing
@@ -170,10 +185,32 @@ export async function createOrderAPI(
   total: number,
 ): Promise<Order> {
   if (API_BASE_URL) {
-    return apiFetch<Order>("/orders", {
+    const envelope = await apiFetch<{
+      status: string;
+      data: {
+        order_id: string;
+        kode_order: string;
+        link_url: string;
+      };
+    }>("/payment/orderMember", {
       method: "POST",
       body: JSON.stringify({ customer, items, total }),
     });
+
+    const resData = envelope.data;
+
+    return {
+      id: resData.order_id || "ORD-" + Date.now(),
+      date: new Date().toLocaleString("en-US"),
+      customer,
+      items,
+      total,
+      bank: customer.payment.bank,
+      va: "", // The new API uses link_url for payment gateway
+      status: "Awaiting Payment",
+      link_url: resData.link_url,
+      kode_order: resData.kode_order,
+    };
   }
 
   // Fallback: generate order locally and save to localStorage
@@ -322,15 +359,37 @@ export async function confirmPayment(
 /** GET /payment/list/bank — Fetch available payment methods */
 export async function fetchPaymentMethodsData(): Promise<PaymentMethodsResponse> {
   if (API_BASE_URL) {
-    const envelope = await apiFetch<{ data: PaymentMethodsResponse }>("/payment/list/bank");
+    const envelope = await apiFetch<{ data: PaymentMethodsResponse }>(
+      "/payment/list/bank",
+    );
     return envelope.data ?? { VA: [], WA: [], SB: [] };
   }
   return {
     VA: [
-      { bank_code: "bca", bank_name: "BCA", name: "BCA", status: true, type: "virtual_account" },
-      { bank_code: "mandiri", bank_name: "Mandiri", name: "Mandiri", status: true, type: "virtual_account" },
+      {
+        bank_code: "bca",
+        bank_name: "BCA",
+        name: "BCA",
+        status: true,
+        type: "virtual_account",
+      },
+      {
+        bank_code: "mandiri",
+        bank_name: "Mandiri",
+        name: "Mandiri",
+        status: true,
+        type: "virtual_account",
+      },
     ],
-    WA: [{ bank_code: "qris", bank_name: "QRIS", name: "QRIS", status: true, type: "wallet_account" }],
+    WA: [
+      {
+        bank_code: "qris",
+        bank_name: "QRIS",
+        name: "QRIS",
+        status: true,
+        type: "wallet_account",
+      },
+    ],
     SB: [],
   };
 }
@@ -355,25 +414,38 @@ export async function fetchProvinces(): Promise<Province[]> {
 /** GET /area/city?province=:id — Fetch cities in a province */
 export async function fetchCities(provinceId: string): Promise<City[]> {
   if (API_BASE_URL) {
-    const envelope = await apiFetch<{ data: City[] }>(`/area/group?province=${provinceId}`);
+    const envelope = await apiFetch<{ data: City[] }>(
+      `/area/group?province=${provinceId}`,
+    );
     return envelope.data ?? [];
   }
   return [];
 }
 
 /** GET /area/group?province=:p&city=:c — Fetch districts in a city */
-export async function fetchDistricts(provinceId: string, cityId: string): Promise<District[]> {
+export async function fetchDistricts(
+  provinceId: string,
+  cityId: string,
+): Promise<District[]> {
   if (API_BASE_URL) {
-    const envelope = await apiFetch<{ data: District[] }>(`/area/group?province=${provinceId}&city=${cityId}`);
+    const envelope = await apiFetch<{ data: District[] }>(
+      `/area/group?province=${provinceId}&city=${cityId}`,
+    );
     return envelope.data ?? [];
   }
   return [];
 }
 
 /** GET /area/group?province=:p&city=:c&district=:d — Fetch sub-districts */
-export async function fetchSubDistricts(provinceId: string, cityId: string, districtName: string): Promise<SubDistrict[]> {
+export async function fetchSubDistricts(
+  provinceId: string,
+  cityId: string,
+  districtName: string,
+): Promise<SubDistrict[]> {
   if (API_BASE_URL) {
-    const envelope = await apiFetch<{ data: SubDistrict[] }>(`/area/group?province=${provinceId}&city=${cityId}&district=${districtName}`);
+    const envelope = await apiFetch<{ data: SubDistrict[] }>(
+      `/area/group?province=${provinceId}&city=${cityId}&district=${districtName}`,
+    );
     return envelope.data ?? [];
   }
   return [];
@@ -427,15 +499,21 @@ export async function fetchShippingRates(
   // Mock response for local development
   return {
     items: {
-      ninja: [], jne: [], wahana: [], rajaongkir: [], lion_parcel: [], sapx: [], jnt: [],
+      ninja: [],
+      jne: [],
+      wahana: [],
+      rajaongkir: [],
+      lion_parcel: [],
+      sapx: [],
+      jnt: [],
       everpro: [
         {
           provider: "EVERPRO",
           rate_id: "SPX Express | Mock | SPXSTD",
           finalRate: 46500,
           etd: "3 - 6 DAY",
-        }
-      ]
-    }
+        },
+      ],
+    },
   };
 }

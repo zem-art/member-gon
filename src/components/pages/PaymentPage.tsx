@@ -46,16 +46,33 @@ export default function PaymentPage() {
                 </p>
 
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 border dark:border-gray-700 mb-6">
-                    <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mb-1">Bank Transfer (VA)</p>
-                    <h3 className="text-lg font-bold mb-4 italic text-blue-900 dark:text-blue-300">
-                        {activePayment.bank.toUpperCase()} VIRTUAL ACCOUNT
-                    </h3>
-                    <div className="flex items-center justify-between bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-xl p-4">
-                        <span className="text-xl font-mono font-bold tracking-wider">{activePayment.va}</span>
-                        <button onClick={() => copyToClipboard(activePayment.va)} className="text-blue-600 dark:text-blue-400 text-xs font-bold hover:underline">
-                            COPY
-                        </button>
-                    </div>
+                    {activePayment.link_url ? (
+                        <>
+                            <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mb-1">Online Payment</p>
+                            <h3 className="text-lg font-bold mb-4 italic text-blue-900 dark:text-blue-300">
+                                PAYMENT GATEWAY
+                            </h3>
+                            <a
+                                href={activePayment.link_url}
+                                className="inline-block w-full bg-blue-600 text-white py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 dark:shadow-none"
+                            >
+                                Open Payment Link
+                            </a>
+                        </>
+                    ) : (
+                        <>
+                            <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mb-1">Bank Transfer (VA)</p>
+                            <h3 className="text-lg font-bold mb-4 italic text-blue-900 dark:text-blue-300">
+                                {activePayment.bank.toUpperCase()} VIRTUAL ACCOUNT
+                            </h3>
+                            <div className="flex items-center justify-between bg-white dark:bg-gray-900 border dark:border-gray-700 rounded-xl p-4">
+                                <span className="text-xl font-mono font-bold tracking-wider">{activePayment.va}</span>
+                                <button onClick={() => copyToClipboard(activePayment.va)} className="text-blue-600 dark:text-blue-400 text-xs font-bold hover:underline">
+                                    COPY
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <div className="flex justify-between items-center px-4 mb-8">

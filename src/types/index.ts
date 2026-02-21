@@ -8,7 +8,7 @@ export interface Product {
   brand: string;
   price_min: number;
   price_max: number;
-  weight?: number;      // weight in grams (optional to allow existing mock data)
+  weight?: number; // weight in grams (optional to allow existing mock data)
   // Fields from BE that we receive but don't display in list
   publish?: boolean;
   created_at?: string;
@@ -18,12 +18,12 @@ export interface Product {
 
 // ─── Variant ────────────────────────────────────────────────────
 export interface ProductVariant {
-  sku: string;       // e.g. "KAA090-RED-M"
-  color: string;     // e.g. "Red"
-  size: string;      // e.g. "M"
+  sku: string; // e.g. "KAA090-RED-M"
+  color: string; // e.g. "Red"
+  size: string; // e.g. "M"
   stock: number;
   price: number;
-  weight?: number;   // weight in grams
+  weight?: number; // weight in grams
 }
 
 // ─── Product Detail (detail page) ───────────────────────────────
@@ -43,7 +43,7 @@ export interface CartItem {
   size: string;
   price: number;
   qty: number;
-  weight: number;      // weight in grams
+  weight: number; // weight in grams
 }
 
 // ─── Customer & Order ───────────────────────────────────────────
@@ -164,6 +164,7 @@ export interface PaymentDetail {
   total: number;
   status: string;
   expiredAt: string;
+  link_url?: string;
 }
 
 export interface TrackingStep {
@@ -187,6 +188,8 @@ export interface Order {
   bank: string;
   va: string;
   status: string;
+  link_url?: string;
+  kode_order?: string;
 }
 
 export interface ApiResponse<T> {

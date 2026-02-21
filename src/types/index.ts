@@ -64,6 +64,7 @@ export interface District {
 export interface SubDistrict {
   subdistrict_id: string;
   subdistrict_name: string;
+  area_id?: string;
   postal_code?: string;
   kode_origin_jnt?: string;
   kode_sicepat?: string;
@@ -86,16 +87,39 @@ export interface CustomerInfo {
   name: string;
   email: string;
   phone: string;
-  province_id: string;
-  province_name: string;
-  city_id: string;
-  city_name: string;
-  district_name: string;
-  subdistrict_id: string;
-  subdistrict_name: string;
-  address: string; // Detailed address (street, house info)
-  courier: string;
-  bank: string;
+  address: string;
+  area: {
+    province_id: string;
+    province_name: string;
+    city_id: string;
+    city_name: string;
+    district_name: string;
+    subdistrict_id: string;
+    subdistrict_name: string;
+    area_id?: string;
+    postal_code?: string;
+    kode_origin_jnt?: string;
+    kode_sicepat?: string;
+    kode_destination_jne?: string;
+    kode_ninja_lt1?: string;
+    kode_ninja_lt2?: string;
+    destination_lion_parcel_code?: string;
+    destination_sapx_code?: string;
+    wahana_destination_code?: string;
+    destination_raja_ongkir?: string;
+  };
+  courir: {
+    courier: string;
+    provider?: string;
+    rate_id?: string;
+    finalRate?: number;
+    etd?: string;
+  };
+  payment: {
+    bank: string;
+    bank_name?: string;
+    type?: string;
+  };
 }
 
 export interface PaymentMethodData {

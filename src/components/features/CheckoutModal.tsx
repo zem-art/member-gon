@@ -162,26 +162,64 @@ export default function CheckoutModal() {
 
         setIsSubmitting(true);
         const formData = new FormData(e.currentTarget);
+        const selectedSub = subDistricts.find(s => s.subdistrict_name === selectedSubDistrict);
         const provinceName = provinces.find(p => p.province_id === selectedProvince)?.province_name || '';
         const cityName = cities.find(c => c.city_id === selectedCity)?.city_name || '';
-        const districtName = selectedDistrict;
-        const subDistrictName = subDistricts.find(s => s.subdistrict_id === selectedSubDistrict)?.subdistrict_name || '';
+
+        console.log(selectedSub);
+
+        // Find selected shipping rate details
+        let selectedRateInfo: any = { courier: formData.get('courier') as string };
+        if (shippingRates) {
+            for (const providerRates of Object.values(shippingRates.items)) {
+                const found = providerRates.find(r => r.rate_id === selectedCourierRateId);
+                if (found) {
+                    selectedRateInfo = {
+                        courier: found.rate_id,
+                        ...found
+                    };
+                    break;
+                }
+            }
+        }
+
+        // Find selected payment method details
+        const bankCode = formData.get('bank') as string;
+        let selectedPayInfo: any = { bank: bankCode };
+        if (paymentMethods) {
+            const allMethods = [
+                ...(paymentMethods.VA || []),
+                ...(paymentMethods.WA || []),
+                ...(paymentMethods.SB || [])
+            ];
+            const foundPay = allMethods.find(m => m.bank_code === bankCode);
+            if (foundPay) {
+                selectedPayInfo = {
+                    bank: foundPay.bank_code,
+                    ...foundPay
+                };
+            }
+        }
 
         const customer: CustomerInfo = {
             code_member: formData.get('code_member') as string,
             name: formData.get('name') as string,
             email: formData.get('email') as string,
             phone: formData.get('phone') as string,
-            province_id: selectedProvince,
-            province_name: provinceName,
-            city_id: selectedCity,
-            city_name: cityName,
-            district_name: districtName,
-            subdistrict_id: selectedSubDistrict,
-            subdistrict_name: subDistrictName,
             address: formData.get('address') as string,
-            courier: formData.get('courier') as string,
-            bank: formData.get('bank') as string,
+            area: {
+                province_id: selectedProvince,
+                province_name: provinceName,
+                city_id: selectedCity,
+                city_name: cityName,
+                district_name: selectedDistrict,
+                subdistrict_id: selectedSubDistrict,
+                subdistrict_name: selectedSub?.subdistrict_name || '',
+                area_id: selectedSub?.area_id || '',
+                ...selectedSub
+            },
+            courir: selectedRateInfo,
+            payment: selectedPayInfo,
         };
 
         try {

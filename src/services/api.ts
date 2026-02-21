@@ -179,7 +179,7 @@ export async function createOrderAPI(
   // Fallback: generate order locally and save to localStorage
   const orderId = "INV-" + Math.floor(10000 + Math.random() * 90000);
   const vaNumber =
-    (customer.bank === "BCA" ? "123" : "880") +
+    (customer.payment.bank === "BCA" ? "123" : "880") +
     Math.floor(1000000000 + Math.random() * 9000000000);
 
   const newOrder: Order = {
@@ -188,7 +188,7 @@ export async function createOrderAPI(
     customer,
     items: [...items],
     total,
-    bank: customer.bank,
+    bank: customer.payment.bank,
     va: vaNumber,
     status: "Awaiting Payment",
   };

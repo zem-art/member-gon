@@ -8,11 +8,7 @@ import { IconRenderer } from '../icons/IconRenderer';
 import type { ProductDetail, ProductVariant, CartItem } from '../../types';
 
 
-// ─── Discount ────────────────────────────────────────────────────
-const DISCOUNT_RATE = 0.1; // 10%
-function applyDiscount(price: number): number {
-    return Math.round(price * (1 - DISCOUNT_RATE));
-}
+
 
 export default function ProductDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -93,11 +89,7 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = () => {
         if (!product || !selectedVariant) return;
-<<<<<<< HEAD
-        const discountedPrice = applyDiscount(selectedVariant.price);
-=======
         const finalPrice = getDiscountedPrice(selectedVariant.price);
->>>>>>> f335f22b3c4898ceca59544f814542071692a50d
         const cartItem: CartItem = {
             product_id: product._id,
             variant_sku: selectedVariant.sku,
@@ -105,11 +97,7 @@ export default function ProductDetailPage() {
             thumbnail: product.thumbnail,
             color: selectedVariant.color,
             size: selectedVariant.size,
-<<<<<<< HEAD
-            price: discountedPrice,
-=======
             price: finalPrice,
->>>>>>> f335f22b3c4898ceca59544f814542071692a50d
             qty,
         };
         addToCart(cartItem);
@@ -250,35 +238,6 @@ export default function ProductDetailPage() {
                         </div>
                     </div>
 
-<<<<<<< HEAD
-                    {/* Price with 10% discount */}
-                    <div className="space-y-1">
-                        {selectedVariant ? (
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <span className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                    Rp {applyDiscount(selectedVariant.price).toLocaleString('id-ID')}
-                                </span>
-                                <span className="text-base md:text-lg text-gray-400 line-through">
-                                    Rp {selectedVariant.price.toLocaleString('id-ID')}
-                                </span>
-                                <span className="bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-lg">
-                                    10% OFF
-                                </span>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-3 flex-wrap">
-                                <span className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                    Rp {applyDiscount(product.price_min).toLocaleString('id-ID')} - {applyDiscount(product.price_max).toLocaleString('id-ID')}
-                                </span>
-                                <span className="text-base md:text-lg text-gray-400 line-through">
-                                    Rp {product.price_min.toLocaleString('id-ID')} - {product.price_max.toLocaleString('id-ID')}
-                                </span>
-                                <span className="bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-lg">
-                                    10% OFF
-                                </span>
-                            </div>
-                        )}
-=======
                     {/* Price */}
                     <div className="space-y-1">
                         <div className="flex items-center gap-3">
@@ -294,7 +253,6 @@ export default function ProductDetailPage() {
                                 Rp {currentPrice.toLocaleString('id-ID')}
                             </span>
                         </div>
->>>>>>> f335f22b3c4898ceca59544f814542071692a50d
                     </div>
 
                     {/* Description */}

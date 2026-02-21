@@ -44,12 +44,43 @@ export interface CartItem {
 }
 
 // ─── Customer & Order ───────────────────────────────────────────
+export interface Province {
+  province_id: string;
+  province_name: string;
+}
+
+export interface City {
+  city_id: string;
+  city_name: string;
+}
+
+export interface District {
+  district_name: string;
+}
+
+export interface SubDistrict {
+  subdistrict_id: string;
+  subdistrict_name: string;
+}
+
+export interface AreaGroup {
+  group_id: string;
+  group_name: string;
+}
+
 export interface CustomerInfo {
   code_member: string;
   name: string;
   email: string;
   phone: string;
-  address: string;
+  province_id: string;
+  province_name: string;
+  city_id: string;
+  city_name: string;
+  district_name: string;
+  subdistrict_id: string;
+  subdistrict_name: string;
+  address: string; // Detailed address (street, house info)
   courier: string;
   bank: string;
 }

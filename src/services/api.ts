@@ -8,6 +8,11 @@ import type {
   PaymentDetail,
   TrackingInfo,
   PaginatedResponse,
+  Province,
+  City,
+  District,
+  SubDistrict,
+  AreaGroup,
 } from "../types";
 import { PRODUCTS, generateMockDetail } from "../data/products";
 import { getGuestId } from "../utils/guestId";
@@ -328,4 +333,71 @@ export async function getPaymentMethods(): Promise<PaymentMethod[]> {
     return apiFetch<PaymentMethod[]>("/payment-methods");
   }
   return Promise.resolve(DEFAULT_PAYMENT_METHODS);
+}
+
+// ─── Geographic / Shipping ──────────────────────────────────────
+
+/** GET /area/province — Fetch all provinces */
+export async function fetchProvinces(): Promise<Province[]> {
+  if (API_BASE_URL) {
+    const envelope = await apiFetch<{ data: Province[] }>("/area/group");
+    return envelope.data ?? [];
+  }
+  return [];
+}
+
+/** GET /area/city?province=:id — Fetch cities in a province */
+export async function fetchCities(provinceId: string): Promise<City[]> {
+  if (API_BASE_URL) {
+    const envelope = await apiFetch<{ data: City[] }>(`/area/group?province=${provinceId}`);
+    return envelope.data ?? [];
+  }
+  return [];
+}
+
+/** GET /area/group?province=:p&city=:c — Fetch districts in a city */
+export async function fetchDistricts(provinceId: string, cityId: string): Promise<District[]> {
+  if (API_BASE_URL) {
+    const envelope = await apiFetch<{ data: District[] }>(`/area/group?province=${provinceId}&city=${cityId}`);
+    return envelope.data ?? [];
+  }
+  return [];
+}
+
+/** GET /area/group?province=:p&city=:c&district=:d — Fetch sub-districts */
+export async function fetchSubDistricts(provinceId: string, cityId: string, districtName: string): Promise<SubDistrict[]> {
+  if (API_BASE_URL) {
+    const envelope = await apiFetch<{ data: SubDistrict[] }>(`/area/group?province=${provinceId}&city=${cityId}&district=${districtName}`);
+    return envelope.data ?? [];
+  }
+  return [];
+}
+
+/** GET /area/group?province=:p&city=:c&district=:d — Fetch area group */
+export async function fetchAreaGroup(
+  provinceId: string,
+  cityName: string,
+  districtName: string,
+): Promise<AreaGroup | null> {
+  if (API_BASE_URL) {
+    try {
+      const params = new URLSearchParams({
+        province: provinceId,
+        city: cityName,
+        district: districtName,
+      });
+      const envelope = await apiFetch<{ data: AreaGroup[] | AreaGroup }>(
+        `/area/group?${params.toString()}`,
+      );
+      // The API might return an array or a single object
+      if (Array.isArray(envelope.data)) {
+        return envelope.data[0] || null;
+      }
+      return envelope.data || null;
+    } catch (err) {
+      console.warn("[fetchAreaGroup] Failed:", err);
+      return null;
+    }
+  }
+  return null;
 }
